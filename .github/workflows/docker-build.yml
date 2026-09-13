@@ -1,0 +1,34 @@
+# .github/workflows/docker-build.yml
+#
+# This file tells GitHub: "every time code is pushed to main,
+# automatically run these steps." No manual action needed once
+# this is in place — that's the whole point of CI/CD.
+
+name: Build Docker Image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    # Runs on a fresh, temporary virtual machine GitHub provides for free.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: get a copy of your repo's code onto that temporary machine.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: build the Docker image, exactly like we did locally,
+      # just running on GitHub's servers instead of your laptop.
+      - name: Build Docker image
+        run: docker build -t chess-predictor:${{ github.sha }} .
+        # github.sha tags the image with the exact commit hash that
+        # triggered this build — useful for tracing which code version
+        # produced which image.
+
+      - name: Confirm image built successfully
+        run: docker images | grep chess-predictor
