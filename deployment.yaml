@@ -1,0 +1,36 @@
+# deployment.yaml
+# Describes the DESIRED STATE: "I want 1 copy of the chess-predictor
+# container running, always." Kubernetes continuously works to keep
+# reality matching this description.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-predictor-deployment
+spec:
+  replicas: 1  # how many copies (Pods) to keep running
+  selector:
+    matchLabels:
+      app: chess-predictor
+  template:
+    metadata:
+      labels:
+        app: chess-predictor
+    spec:
+      containers:
+        - name: chess-predictor
+          image: chess-predictor:latest
+          imagePullPolicy: Never
+          # "Never" tells Kubernetes: don't try to download this image
+          # from the internet — use the one already built locally.
+          ports:
+            - containerPort: 8000
+          resources:
+            # Keep resource requests modest so this runs comfortably
+            # on a laptop with limited RAM.
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

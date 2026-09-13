@@ -1,0 +1,19 @@
+# service.yaml
+# Gives our Pod(s) a stable network address, so we (or other services)
+# have one consistent way to reach the app even as Pods come and go.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chess-predictor-service
+spec:
+  type: NodePort
+  # NodePort exposes the service on a port reachable from outside
+  # the cluster — the simplest option for local development with minikube.
+  selector:
+    app: chess-predictor
+    # This must match the "labels" set in deployment.yaml — it's how
+    # the Service knows which Pods to route traffic to.
+  ports:
+    - port: 8000        # port other things inside the cluster use
+      targetPort: 8000  # port the container actually listens on
